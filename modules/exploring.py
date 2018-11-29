@@ -25,6 +25,7 @@ class exploring:
 
     def __unload(self):
         self.task.cancel()
+        self.task1.cancel()
 
     async def has_timer(self,user_id):
         user = await self.bot.pool.fetchrow("SELECT * FROM user_timers WHERE user_id = $1;",user_id)
@@ -43,10 +44,9 @@ class exploring:
     async def waiter_e(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            await asyncio.sleep(5)
             rows = await self.bot.pool.fetchrow('SELECT * FROM user_timers WHERE timer_type = 0 LIMIT 1;')
             if not rows:
-                continue
+                await asyncio.sleep(1)
             await extras.sleep_time(rows['end_time'])
             e = discord.Embed()
             #0 is explore
@@ -61,6 +61,10 @@ class exploring:
                 e.set_footer(text='Good luck on your next exploration!')
             else:
                 pass
+            await self.bot.pool.execute('''
+            UPDATE user_stats
+            SET uwus = user_stats.uwus + $2, foes_killed = user_stats.foes_killed + $3, total_deaths = user_stats.total_deaths + $4, current_xp = user_stats.current_xp + $5
+            ''',rows['user_id'],uwus_earned,foes_killed,deaths,xp)
             try:
                 await user.send(embed=e)
             except discord.Forbidden:
@@ -77,10 +81,9 @@ class exploring:
     async def waiter_a(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            await asyncio.sleep(5)
             rows = await self.bot.pool.fetchrow('SELECT * FROM user_timers WHERE timer_type = 1 LIMIT 1;')
             if not rows:
-                continue
+                await asyncio.sleep(1)
             await extras.sleep_time(rows['end_time'])
             e = discord.Embed()
             #0 is explore
@@ -96,9 +99,7 @@ class exploring:
             else:
                 pass
             await self.bot.pool.execute('''
-            INSERT INTO user_stats (user_id,uwus,foes_killed,total_deaths,current_xp)
-            VALUES ($1,$2,$3,$4,$5) 
-            ON CONFLICT (user_id) DO UPDATE
+            UPDATE user_stats
             SET uwus = user_stats.uwus + $2, foes_killed = user_stats.foes_killed + $3, total_deaths = user_stats.total_deaths + $4, current_xp = user_stats.current_xp + $5
             ''',rows['user_id'],uwus_earned,foes_killed,deaths,xp)
             try:

@@ -14,7 +14,7 @@ class uwulonian:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(description='Get an uwulonians or your stats')
+    @commands.command(description='Get an uwulonians or your stats', aliases=['bal', 'wallet'])
     async def stats(self,ctx,user: discord.Member=None):
         async with self.bot.pool.acquire() as conn:
             user = user or ctx.author
