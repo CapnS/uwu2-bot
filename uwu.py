@@ -46,13 +46,14 @@ class uwu(commands.Bot):
         self.bot_version = '0.0.3 cat'
         self.process = psutil.Process(os.getpid())
 
-    def run(self):
+    async def start(self):
+        await self.create_pool()
         for ext in startup_extensions:
             try:
                 self.load_extension(ext)
             except BaseException as e:
                 print(f"Failed to load {ext}\n{type(e).__name__}: {e}")
-        super().run(self.config['token'])
+        super().start(self.config['token'])
 
     async def create_pool(self):
         credentials = {"user": self.config['dbuser'], "password": self.config['dbpassword'],"database": self.config['dbname'], "host": "127.0.0.1"}

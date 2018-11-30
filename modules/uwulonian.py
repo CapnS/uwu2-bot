@@ -22,11 +22,17 @@ class uwulonian:
             uwulonian = await conn.fetchrow("SELECT * FROM user_stats WHERE user_id = $1",user.id)
             if uwulonian is None:
                 return await ctx.send("You or the user doesn't have an uwulonian created.")
+            roles = "Yes"
+            is_patron = await conn.fetchrow("SELECT * FROM p_users WHERE user_id = $1", user.id)
+            if is_patron is None:
+                roles = "No"
 
             e = discord.Embed(colour=0x7289da)
 
-            e.add_field(name=f"Stats for {uwulonian_name['user_name']}",value=f"""Foes killed - {uwulonian['foes_killed']}\nDeaths - {uwulonian['total_deaths']}\n XP - {uwulonian['current_xp']}\nuwus - {uwulonian['uwus']}""")
-            e.add_field(name='Time created',value=f"""{uwulonian_name['time_created'].strftime("%x at %X")}""")
+            e.add_field(name=f"Stats for {uwulonian_name['user_name']}", value=f"""Foes killed - {uwulonian['foes_killed']}\nDeaths - {uwulonian['total_deaths']}\nuwus - {uwulonian['uwus']}""")
+            e.add_field(name="Levels", value=f"XP - {uwulonian['current_xp']}\n Level - {uwulonian['current_level']}")
+            e.add_field(name='Time created', value=f"""{uwulonian_name['time_created'].strftime("%x at %X")}""")
+            e.add_field(name='Is Patron?', value=roles)
             await ctx.send(embed=e)
 
     @commands.command(aliases=['lb','wowcheaterhenumber1onlb'])

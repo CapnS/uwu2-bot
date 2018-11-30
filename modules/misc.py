@@ -110,11 +110,19 @@ class misc:
 """
 Supporter since 11/19/18 at 20:42:35 UTC
 - [His bot](https://discordapp.com/oauth2/authorize?&client_id=448915931507458048&scope=bot&permissions=8)
-""")
+""", inline=False)
         e.add_field(name="Arika", value=
 """
 Supporter since 11/28/18 at 02:06:13 UTC
-""")
+""", inline=False)
+        e.add_field(name="Mary Johanna", value=
+"""
+Awesome since 11/29/18 at 17:21:28 UTC
+""", inline=False)
+        e.add_field(name="XiuhcoatlSlayer", value=
+"""
+Supporter since 11/30/18 at 02:14:11 UTC
+""", inline=False)
         await ctx.send(embed=e)
 
     @commands.command(description="Send voting link")

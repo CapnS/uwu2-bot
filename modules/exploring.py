@@ -44,27 +44,32 @@ class exploring:
     async def waiter_e(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            rows = await self.bot.pool.fetchrow('SELECT * FROM user_timers WHERE timer_type = 0 LIMIT 1;')
+            rows = await self.bot.pool.fetchrow("SELECT * FROM user_timers WHERE timer_type = 0 ORDER BY end_time ASC LIMIT 1;")
+            current_xp = await self.bot.pool.fetchrow("SELECT * FROM user_stats WHERE user_id = $1", rows['user_id'])
             if not rows:
-                await asyncio.sleep(1)
+                continue
             await extras.sleep_time(rows['end_time'])
             e = discord.Embed()
             #0 is explore
-            user = await self.bot.get_user_info(rows['user_id'])
-            if rows['timer_type'] is 0:
-                deaths = randint(1,2)
-                foes_killed = randint(10,120)
-                xp = ((foes_killed * 10) - (deaths * 25)) / 2
-                uwus_earned = (foes_killed * 10) - (deaths * 25)
-                e.set_author(name=f"Your uwulonian is back from exploring")
-                e.add_field(name='Explore Stats',value=f"Foes killed - {foes_killed}\nDeaths - {deaths}(-50 per death)\nXP Earned - {xp}\nuwus Earned - {uwus_earned}")
-                e.set_footer(text='Good luck on your next exploration!')
-            else:
-                pass
+            user = self.bot.get_user(rows['user_id'])
+            deaths = randint(1,2)
+            foes_killed = randint(10,120)
+            xp = ((foes_killed * 10) - (deaths * 25)) / 2
+            uwus_earned = (foes_killed * 10) - (deaths * 25)
+            xp_leveling = current_xp['current_xp'] + xp
+            lvl_msg = "Your uwulonian did not level up"
+            new_lvl = 0
+            if xp < rows['current_level'] * 2000:
+                lvl_msg = f"Your uwulonian leveled up to {rows['current_level'] + 1}"
+                new_lvl = rows['current_level'] + 1
+            e.set_author(name=f"Your uwulonian is back from exploring")
+            e.add_field(name='Explore Stats',value=f"Foes killed - {foes_killed}\nDeaths - {deaths}(-50 per death)\nXP Earned - {xp}\nuwus Earned - {uwus_earned}")
+            e.set_footer(text='Good luck on your next exploration!')
             await self.bot.pool.execute('''
             UPDATE user_stats
-            SET uwus = user_stats.uwus + $2, foes_killed = user_stats.foes_killed + $3, total_deaths = user_stats.total_deaths + $4, current_xp = user_stats.current_xp + $5
-            ''',rows['user_id'],uwus_earned,foes_killed,deaths,xp)
+            SET uwus = user_stats.uwus + $2, foes_killed = user_stats.foes_killed + $3, total_deaths = user_stats.total_deaths + $4, current_xp = user_stats.current_xp + $5, current_level = user_stats.current_level + $6
+            WHERE user_id = $1
+            ''',int(rows['user_id']),uwus_earned,foes_killed,deaths,xp, new_lvl)
             try:
                 await user.send(embed=e)
             except discord.Forbidden:
@@ -74,6 +79,7 @@ class exploring:
             channel = discord.utils.get(guild.text_channels, id=515577306283245569)
             e.set_author(name=f"""{user.name}'s uwulonian is back from an Exploration""")
             e.add_field(name='Stats',value=f"Foes killed - {foes_killed}\nDeaths - {deaths}(-50 per death)\nXP Earned - {xp}\nuwus Earned - {uwus_earned}")
+            e.add_field(name='Level up',value=lvl_msg)
 
             await channel.send(embed=e)
             await self.bot.pool.execute("DELETE FROM user_timers WHERE user_id = $1 AND timer_type = $2",rows['user_id'], rows['timer_type'])
@@ -81,27 +87,33 @@ class exploring:
     async def waiter_a(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            rows = await self.bot.pool.fetchrow('SELECT * FROM user_timers WHERE timer_type = 1 LIMIT 1;')
+            rows = await self.bot.pool.fetchrow("SELECT * FROM user_timers WHERE timer_type = 1 ORDER BY end_time ASC LIMIT 1;")
+            current_xp = await self.bot.pool.fetchrow("SELECT * FROM user_stats WHERE user_id = $1", rows['user_id'])
             if not rows:
-                await asyncio.sleep(1)
+                continue
             await extras.sleep_time(rows['end_time'])
             e = discord.Embed()
             #0 is explore
-            user = await self.bot.get_user_info(rows['user_id'])
-            if rows['timer_type'] is 1:
-                deaths = randint(1,4)
-                foes_killed = randint(45,320)
-                uwus_earned = (foes_killed * 10) - (deaths * 50)
-                xp = ((foes_killed * 10) - (deaths * 50)) / 2
-                e.set_author(name=f"Your uwulonian is back from their adventure")
-                e.add_field(name='Adventure Stats',value=f"Foes killed - {foes_killed}\nDeaths - {deaths}(-50 per death)\nXP Earned - {xp}\nuwus Earned - {uwus_earned}")
-                e.set_footer(text='Good luck on your next adventure!')
-            else:
-                pass
+            user = self.bot.get_user(rows['user_id'])
+            deaths = randint(1,4)
+            foes_killed = randint(45,320)
+            uwus_earned = (foes_killed * 10) - (deaths * 50)
+            xp = ((foes_killed * 10) - (deaths * 50)) / 2
+            xp_leveling = current_xp['current_xp'] + xp
+            lvl_msg = "Your uwulonian did not level up"
+            new_lvl = 0
+            if xp < rows['current_level'] * 2000:
+                lvl_msg = f"Your uwulonian leveled up to {rows['current_level'] + 1}"
+                new_lvl = rows['current_level'] + 1
+            e.set_author(name=f"Your uwulonian is back from their adventure")
+            e.add_field(name='Adventure Stats',value=f"Foes killed - {foes_killed}\nDeaths - {deaths}(-50 per death)\nXP Earned - {xp}\nuwus Earned - {uwus_earned}")
+            e.add_field(name='Level up',value=lvl_msg)
+            e.set_footer(text='Good luck on your next adventure!')
             await self.bot.pool.execute('''
             UPDATE user_stats
-            SET uwus = user_stats.uwus + $2, foes_killed = user_stats.foes_killed + $3, total_deaths = user_stats.total_deaths + $4, current_xp = user_stats.current_xp + $5
-            ''',rows['user_id'],uwus_earned,foes_killed,deaths,xp)
+            SET uwus = user_stats.uwus + $2, foes_killed = user_stats.foes_killed + $3, total_deaths = user_stats.total_deaths + $4, current_xp = user_stats.current_xp + $5, current_level = user_stats.current_level + $6
+            WHERE user_id = $1
+            ''',int(rows['user_id']),uwus_earned,foes_killed,deaths,xp, new_lvl)
             try:
                 await user.send(embed=e)
             except discord.Forbidden:
@@ -109,8 +121,6 @@ class exploring:
             e = discord.Embed()
             guild = self.bot.get_guild(513888506498646052)
             channel = discord.utils.get(guild.text_channels, id=515577306283245569)
-            e.set_author(name=f"""{user.name}'s uwulonian is back from an Adventure""")
-            e.add_field(name='Stats',value=f"Foes killed - {foes_killed}\nDeaths - {deaths}(-50 per death)\nXP Earned - {xp}\nuwus Earned - {uwus_earned}")
             await channel.send(embed=e)
             await self.bot.pool.execute("DELETE FROM user_timers WHERE user_id = $1 AND timer_type = $2",rows['user_id'], rows['timer_type'])
 

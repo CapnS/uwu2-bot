@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS user_stats (
     uwus BIGINT NOT NULL,
     foes_killed BIGINT NOT NULL,
     total_deaths BIGINT NOT NULL,
-    current_level BIGINT NOT NULL DEFAULT 0,
+    current_level BIGINT NOT NULL DEFAULT 1,
     current_xp BIGINT NOT NULL DEFAULT 0
 );
 
