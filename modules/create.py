@@ -33,7 +33,7 @@ class create:
         except asyncpg.UniqueViolationError:
             return await ctx.send(f"{name.content} is already used. Please try again with a different name.")
 
-        await self.bot.pool.execute('INSERT INTO user_stats ("user_id","uwus","foes_killed","total_deaths","current_xp","current_level") VALUES ($1,$2,$3,$4,$5,$6);', ctx.author.id,0,0,0,0,0)
+        await self.bot.pool.execute('INSERT INTO user_stats ("user_id","uwus","foes_killed","total_deaths","current_xp","current_level") VALUES ($1,$2,$3,$4,$5,$6);', ctx.author.id,1000,0,0,0,0)
         await name_set.delete()
         await ctx.send(f"Success! Made uwulonian with name `{name.content}`".replace('@','@\u200b'))
 

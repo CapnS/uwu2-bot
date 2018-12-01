@@ -53,7 +53,7 @@ class uwu(commands.Bot):
                 self.load_extension(ext)
             except BaseException as e:
                 print(f"Failed to load {ext}\n{type(e).__name__}: {e}")
-        super().start(self.config['token'])
+        await super().start(self.config['token'])
 
     async def create_pool(self):
         credentials = {"user": self.config['dbuser'], "password": self.config['dbpassword'],"database": self.config['dbname'], "host": "127.0.0.1"}

@@ -59,17 +59,24 @@ class exploring:
             xp_leveling = current_xp['current_xp'] + xp
             lvl_msg = "Your uwulonian did not level up"
             new_lvl = 0
-            if xp < rows['current_level'] * 2000:
-                lvl_msg = f"Your uwulonian leveled up to {rows['current_level'] + 1}"
-                new_lvl = rows['current_level'] + 1
+            if current_xp['current_level'] == 0:
+                if current_xp['current_xp'] + xp > 1000:
+                    lvl_msg = f"Your uwulonian leveled up to {current_xp['current_level'] + 1}"
+                    new_lvl = 1
+                    xp = 0
+            if current_xp['current_xp'] + xp > current_xp['current_level'] * 2000:
+                lvl_msg = f"Your uwulonian leveled up to {current_xp['current_level'] + 1}"
+                new_lvl = 1
+                xp = 0
             e.set_author(name=f"Your uwulonian is back from exploring")
             e.add_field(name='Explore Stats',value=f"Foes killed - {foes_killed}\nDeaths - {deaths}(-50 per death)\nXP Earned - {xp}\nuwus Earned - {uwus_earned}")
+            e.add_field(name='Level up',value=lvl_msg)
             e.set_footer(text='Good luck on your next exploration!')
             await self.bot.pool.execute('''
             UPDATE user_stats
             SET uwus = user_stats.uwus + $2, foes_killed = user_stats.foes_killed + $3, total_deaths = user_stats.total_deaths + $4, current_xp = user_stats.current_xp + $5, current_level = user_stats.current_level + $6
             WHERE user_id = $1
-            ''',int(rows['user_id']),uwus_earned,foes_killed,deaths,xp, new_lvl)
+            ''',int(rows['user_id']), uwus_earned, foes_killed, deaths, xp, new_lvl)
             try:
                 await user.send(embed=e)
             except discord.Forbidden:
@@ -79,7 +86,6 @@ class exploring:
             channel = discord.utils.get(guild.text_channels, id=515577306283245569)
             e.set_author(name=f"""{user.name}'s uwulonian is back from an Exploration""")
             e.add_field(name='Stats',value=f"Foes killed - {foes_killed}\nDeaths - {deaths}(-50 per death)\nXP Earned - {xp}\nuwus Earned - {uwus_earned}")
-            e.add_field(name='Level up',value=lvl_msg)
 
             await channel.send(embed=e)
             await self.bot.pool.execute("DELETE FROM user_timers WHERE user_id = $1 AND timer_type = $2",rows['user_id'], rows['timer_type'])
@@ -102,9 +108,15 @@ class exploring:
             xp_leveling = current_xp['current_xp'] + xp
             lvl_msg = "Your uwulonian did not level up"
             new_lvl = 0
-            if xp < rows['current_level'] * 2000:
-                lvl_msg = f"Your uwulonian leveled up to {rows['current_level'] + 1}"
-                new_lvl = rows['current_level'] + 1
+            if current_xp['current_level'] == 0:
+                if current_xp['current_xp'] + xp > 1000:
+                    lvl_msg = f"Your uwulonian leveled up to {current_xp['current_level'] + 1}"
+                    new_lvl = 1
+                    xp = 0
+            if current_xp['current_xp'] + xp > current_xp['current_level'] * 2000:
+                lvl_msg = f"Your uwulonian leveled up to {current_xp['current_level'] + 1}"
+                new_lvl = 1
+                xp = 0
             e.set_author(name=f"Your uwulonian is back from their adventure")
             e.add_field(name='Adventure Stats',value=f"Foes killed - {foes_killed}\nDeaths - {deaths}(-50 per death)\nXP Earned - {xp}\nuwus Earned - {uwus_earned}")
             e.add_field(name='Level up',value=lvl_msg)
@@ -121,6 +133,8 @@ class exploring:
             e = discord.Embed()
             guild = self.bot.get_guild(513888506498646052)
             channel = discord.utils.get(guild.text_channels, id=515577306283245569)
+            e.set_author(name=f"""{user.name}'s uwulonian is back from an Adventure""")
+            e.add_field(name='Stats', value=f"Foes killed - {foes_killed}\nDeaths - {deaths}(-50 per death)\nXP Earned - {xp}\nuwus Earned - {uwus_earned}")
             await channel.send(embed=e)
             await self.bot.pool.execute("DELETE FROM user_timers WHERE user_id = $1 AND timer_type = $2",rows['user_id'], rows['timer_type'])
 
