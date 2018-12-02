@@ -10,6 +10,7 @@ import os
 import sys
 import logging
 import aiohttp
+import aioredis
 import psutil
 
 try:
@@ -45,6 +46,7 @@ class uwu(commands.Bot):
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.bot_version = '0.0.3 cat'
         self.process = psutil.Process(os.getpid())
+        self.loop = asyncio.get_event_loop()
 
     async def start(self):
         await self.create_pool()
@@ -61,6 +63,7 @@ class uwu(commands.Bot):
 
     async def on_ready(self):
         await self.create_pool()
+        self.redis = await aioredis.create_pool('redis://localhost', password=self.config['redispassword'], minsize=5, maxsize=10, loop=self.loop)
         with open("utils/schema.sql") as f:
             await self.pool.execute(f.read())
         print("Bot ready!")

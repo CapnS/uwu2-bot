@@ -35,7 +35,7 @@ class create:
 
         await self.bot.pool.execute('INSERT INTO user_stats ("user_id","uwus","foes_killed","total_deaths","current_xp","current_level") VALUES ($1,$2,$3,$4,$5,$6);', ctx.author.id,1000,0,0,0,0)
         await name_set.delete()
-        await ctx.send(f"Success! Made uwulonian with name `{name.content}`".replace('@','@\u200b'))
+        await ctx.send(f"Success! Made uwulonian with name `{name.content}`. Please read `uwu rules` for uwus rules regarding usage.".replace('@','@\u200b'))
 
     @commands.command()
     async def rename(self, ctx, *, name):

@@ -60,5 +60,11 @@ CREATE TABLE IF NOT EXISTS trivia_channels (
     host_id BIGINT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS guessing (
+    guild_id BIGINT PRIMARY KEY NOT NULL,
+    channel_id BIGINT NOT NULL,
+    host_id BIGINT NOT NULL
+);
+
 --ALTER TABLE marriages ADD CONSTRAINT user_marriages_user_id_fkey FOREIGN KEY (user1_id) REFERENCES user_settings (user_id) ON DELETE CASCADE;")
 --ALTER TABLE user_badges ADD CONSTRAINT user_badges_user_id_fkey FOREIGN KEY (user_id) REFERENCES user_settings (user_id) ON DELETE CASCADE;")

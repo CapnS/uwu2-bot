@@ -45,9 +45,9 @@ class exploring:
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             rows = await self.bot.pool.fetchrow("SELECT * FROM user_timers WHERE timer_type = 0 ORDER BY end_time ASC LIMIT 1;")
-            current_xp = await self.bot.pool.fetchrow("SELECT * FROM user_stats WHERE user_id = $1", rows['user_id'])
             if not rows:
-                continue
+                await asyncio.sleep(1)
+            current_xp = await self.bot.pool.fetchrow("SELECT * FROM user_stats WHERE user_id = $1", rows['user_id'])
             await extras.sleep_time(rows['end_time'])
             e = discord.Embed()
             #0 is explore
@@ -94,9 +94,9 @@ class exploring:
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             rows = await self.bot.pool.fetchrow("SELECT * FROM user_timers WHERE timer_type = 1 ORDER BY end_time ASC LIMIT 1;")
-            current_xp = await self.bot.pool.fetchrow("SELECT * FROM user_stats WHERE user_id = $1", rows['user_id'])
             if not rows:
-                continue
+                await asyncio.sleep(1)
+            current_xp = await self.bot.pool.fetchrow("SELECT * FROM user_stats WHERE user_id = $1", rows['user_id'])
             await extras.sleep_time(rows['end_time'])
             e = discord.Embed()
             #0 is explore

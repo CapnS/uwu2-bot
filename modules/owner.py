@@ -17,10 +17,13 @@ class owner:
 
         raise(errorhandler.IsStaff(ctx))
 
-    @commands.command(hidden=True)
-    async def plonk(self,ctx,user_id):
+    @commands.group(invoke_without_command=True, description="Does nothing without a subcommand")
+    async def uwus(self, ctx):
+        await ctx.send("owo")
+
+    @uwus.command(hidden=True)
+    async def plonk(self,ctx,user_id:int):
         await self.bot.pool.execute("DELETE FROM user_settings WHERE user_id = $1",user_id)
-        await self.bot.pool.execute("DELETE FROM user_timers WHERE user_id = $1",user_id)
         guild = self.bot.get_guild(513888506498646052)
         channel = discord.utils.get(guild.text_channels, id=514246616459509760)
         await channel.send(

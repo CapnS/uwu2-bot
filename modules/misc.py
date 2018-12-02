@@ -129,5 +129,16 @@ Supporter since 11/30/18 at 02:14:11 UTC
     async def vote(self,ctx):
         await ctx.send("You can vote for me here! https://discordbots.org/bot/508725128427995136/vote I greatly appreciate voting as it helps the bot a lot")
 
+    @commands.command(description="Bot rules", aliases=['tos'])
+    async def rules(self, ctx):
+        await ctx.send(       
+"""
+uwu rules. You must follow these or we will take action
+`-` Don't spam or abuse commands with the intent to harm or slow the bot down. We want the best experience for our users anything to harm this is a problem.
+`-` Don't rename or create an uwulonian with a harmful, racist, or any name that can offend someone. We will most likely delete your uwulonian if you do this.
+`-` The use of scripts or anything to gain an advantage is forbidden.
+`-` DM staff if you are having problems with the bot don't DM regular members unless they say you can.
+""")
+
 def setup(bot):
     bot.add_cog(misc(bot))
