@@ -61,7 +61,7 @@ class uwus:
             e = discord.Embed(description=
 """
 Welcome to uwu's guessing game! To win guess the users name based off their avatar and discriminator(#0000)            
-You have 60 seconds to guess! Good luck!
+You have 30 seconds to guess! Good luck!
 """)
             e.set_author(name="Guessing game")
 
@@ -70,23 +70,26 @@ You have 60 seconds to guess! Good luck!
                 return await ctx.send("You can only play guessing game if you are in a server with more then 15 members. Join uwus support server if you want to play but don't have 15 members.")
             randmem = choice(members)
 
-            e.add_field(name="Info", value=f"The users discriminator is {randmem.discriminator}")
+            e.add_field(name="Info", value=f"The users discriminator is {randmem.discriminator}. Hint: Thier name starts with {randmem.name[:1]}")
             e.set_image(url=randmem.avatar_url_as(static_format="png"))
             embed = await ctx.send(embed=e)
 
             def check(amsg):
                 return amsg.content == randmem.name
             try:
-                name = await self.bot.wait_for('message', timeout=60, check=check)
+                name = await self.bot.wait_for('message', timeout=30, check=check)
             except asyncio.TimeoutError:
                 await embed.delete()
                 await conn.execute("DELETE FROM guessing WHERE guild_id = $1 AND channel_id = $2", ctx.guild.id, ctx.channel.id)
                 return await ctx.send(f"Times up! The user was {randmem.name}.".replace('@','@\u200b'))
 
             await conn.execute("DELETE FROM guessing WHERE guild_id = $1 AND channel_id = $2", ctx.guild.id, ctx.channel.id)
-            await conn.execute("UPDATE user_stats SET uwus = user_stats.uwus + 1000 WHERE user_id = $1", name.author.id)
-            await embed.delete()
-            await ctx.send(f"{name.author} guessed correctly and got 1000 uwus! It was {randmem.name}")
+            status = await conn.fetchrow("UPDATE user_stats SET uwus = user_stats.uwus + 50 WHERE user_id = $1 RETURNING True", name.author.id)
+            if status:
+                await embed.delete()
+                return await ctx.send(f"{name.author} guessed correctly and got 50 uwus! It was {randmem.name}.")
+
+            await ctx.send(f"{name.author} got it right but does not have an uwulonian. It was {randmem.name}.")
 
 def setup(bot):
     bot.add_cog(uwus(bot))
